@@ -1,0 +1,144 @@
+-- Create the GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "AutoClickerGUI"
+gui.IgnoreGuiInset = true
+gui.Parent = game.Players.LocalPlayer.PlayerGui
+
+-- Create the main frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 200, 0, 150)
+frame.Position = UDim2.new(0.5, -100, 1.2, 0)
+frame.BackgroundColor3 = Color3.new(1, 0, 0)
+frame.BorderSizePixel = 0
+frame.Parent = gui
+
+-- Create the x button
+local xButton = Instance.new("TextButton")
+xButton.Size = UDim2.new(0.1, 0, 0.1, 0)
+xButton.Position = UDim2.new(0.9, 0, 0, 0)
+xButton.BackgroundColor3 = Color3.new(1, 1, 1)
+xButton.TextColor3 = Color3.new(0, 0, 0)
+xButton.Text = "✖️"
+xButton.Font = Enum.Font.GothamBold
+xButton.TextScaled = true
+xButton.Parent = frame
+
+-- Create the skull emoji
+local skull = Instance.new("TextButton")
+skull.Size = UDim2.new(0.2, 0, 0.2, 0)
+skull.Position = UDim2.new(0.4, 0, 0.4, 0)
+skull.BackgroundColor3 = Color3.new(0, 0, 0)
+skull.TextColor3 = Color3.new(1, 1, 1)
+skull.Text = "💀"
+skull.Font = Enum.Font.GothamBold
+skull.TextScaled = true
+skull.Visible = false
+skull.Parent = gui
+
+-- Create the text label
+local textLabel = Instance.new("TextLabel")
+textLabel.Size = UDim2.new(1, 0, 0.2, 0)
+textLabel.Position = UDim2.new(0, 0, 0, 0)
+textLabel.Text = "bro be hacking lol💀"
+textLabel.TextColor3 = Color3.new(1, 1, 1)
+textLabel.TextScaled = true
+textLabel.Parent = frame
+
+-- Create the credit label
+local creditLabel = Instance.new("TextLabel")
+creditLabel.Size = UDim2.new(1, 0, 0.1, 0)
+creditLabel.Position = UDim2.new(0, 0, 0.9, 0)
+creditLabel.Text = "Credit: YOUTUBE"
+creditLabel.TextColor3 = Color3.new(1, 0, 0)
+creditLabel.TextScaled = true
+creditLabel.BackgroundTransparency = 1
+creditLabel.Parent = frame
+
+-- Function to open YouTube link
+local function openYouTube()
+    game:GetService("HttpService"):GetAsync("https://youtube.com/@Unkrownd?si=cuyck96nE0ifM5Ha")
+end
+
+-- Connect the credit label click event to openYouTube function
+creditLabel.MouseButton1Click:Connect(openYouTube)
+
+-- Function to activate/deactivate the auto-clicker
+local function toggleAutoClicker()
+    if button.BackgroundColor3 == Color3.new(1, 0, 0) then
+        button.Text = "AutoClicker On"
+        button.BackgroundColor3 = Color3.new(0, 1, 0)
+        textLabel.Text = "I made this using ChatGPT💀"
+        skull.Visible = true
+        -- Your script to activate the auto-clicker
+        print("AutoClicker activated!")
+    else
+        button.Text = "Activate AutoClicker"
+        button.BackgroundColor3 = Color3.new(1, 0, 0)
+        textLabel.Text = "bro be hacking lol💀"
+        skull.Visible = false
+        -- Your script to deactivate the auto-clicker
+        print("AutoClicker deactivated!")
+    end
+end
+
+-- Function to handle the button click event
+local function onButtonClick()
+    toggleAutoClicker()
+end
+
+-- Connect the button click event to the onButtonClick function
+button.MouseButton1Click:Connect(onButtonClick)
+
+-- Function to handle the x button click event
+local function onXButtonClick()
+    frame:TweenPosition(UDim2.new(0.5, -100, 1.2, 0), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.5, true)
+    skull.Visible = true
+end
+
+-- Connect the x button click event to the onXButtonClick function
+xButton.MouseButton1Click:Connect(onXButtonClick)
+
+-- Function to handle the skull emoji click event
+local function onSkullClick()
+    frame:TweenPosition(UDim2.new(0.5, -100, 0.5, -75), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true)
+    skull.Visible = false
+end
+
+-- Connect the skull emoji click event to the onSkullClick function
+skull.MouseButton1Click:Connect(onSkullClick)
+
+-- Make the GUI draggable
+local dragInput, dragStart, startPos
+
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragStart = input.Position
+        startPos = frame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragStart = nil
+            end
+        end)
+    end
+end)
+
+frame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if input == dragInput and dragStart then
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+-- Anchor everything except the skull emoji
+for _, element in ipairs(frame:GetChildren()) do
+    if element ~= skull and element:IsA("GuiObject") then
+        element.AnchorPoint = Vector2.new(0, 0)
+        element.Position = UDim2.new(0, element.Position.X.Offset, 0, element.Position.Y.Offset)
+    end
+end
